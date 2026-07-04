@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dos2unix \
     iproute2 \
     net-tools \
+    nginx \
     python-is-python3 \
     python3 \
     python3-dev \
@@ -26,13 +27,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY docker/entrypoint.sh /entrypoint.sh
 COPY docker/configure.sh /configure.sh
+COPY docker/configure-paths.sh /configure-paths.sh
+COPY docker/persist-data.sh /persist-data.sh
 COPY docker/install-docker.sh /install-docker.sh
+COPY docker/nginx-unified.conf /opt/xui/nginx-unified.conf
 
-RUN dos2unix /entrypoint.sh /configure.sh /install-docker.sh \
-    && chmod +x /entrypoint.sh /configure.sh /install-docker.sh
+RUN dos2unix /entrypoint.sh /configure.sh /configure-paths.sh /persist-data.sh /install-docker.sh \
+    && chmod +x /entrypoint.sh /configure.sh /configure-paths.sh /persist-data.sh /install-docker.sh
 
 VOLUME ["/home/xui", "/var/lib/mysql"]
 
-EXPOSE 80 443 8080 2086 8000 25461
+EXPOSE 80 443
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -8,15 +8,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
-      - "2086:2086"
-      - "8000:8000"
-      - "25461:25461"
     volumes:
       - xui_data:/home/xui
       - mysql_data:/var/lib/mysql
     environment:
       - TZ=UTC
+      - DOMAIN=${DOMAIN:-}
     ulimits:
       nofile:
         soft: 655350

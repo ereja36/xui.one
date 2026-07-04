@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "[configure] Applying network bindings for Docker..."
+echo "[configure] Applying network bindings..."
 
 PHP_ETC="/home/xui/bin/php/etc"
 if [ -d "$PHP_ETC" ]; then
@@ -19,11 +19,16 @@ if [ -f /home/xui/config/config.ini ]; then
 fi
 
 if [ -f /home/xui/bin/redis/redis.conf ]; then
-    sed -i 's/^bind .*/bind 0.0.0.0/g' /home/xui/bin/redis/redis.conf
+    sed -i 's/^bind .*/bind 127.0.0.1/g' /home/xui/bin/redis/redis.conf
 fi
 
 if [ -f /etc/mysql/my.cnf ]; then
-    sed -i 's/bind-address.*/bind-address = 0.0.0.0/g' /etc/mysql/my.cnf
+    sed -i 's/bind-address.*/bind-address = 127.0.0.1/g' /etc/mysql/my.cnf
+fi
+
+# Path-based routing (no extra ports in URLs)
+if [ -f /configure-paths.sh ]; then
+    /configure-paths.sh
 fi
 
 echo "[configure] Network configuration complete."

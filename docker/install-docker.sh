@@ -6,7 +6,7 @@ echo "[install] Starting XUI.one installation (this can take 10-15 minutes)..."
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
-apt-get install -y -qq python3 python3-dev unzip wget >/dev/null
+apt-get install -y -qq python3 python3-dev unzip wget nginx >/dev/null
 
 cd /root
 
@@ -26,7 +26,6 @@ fi
 
 chmod +x /root/install.python3
 
-# Non-interactive install: auto-confirm overwrite if directory exists
 export PYTHONUNBUFFERED=1
 echo "Y" | python3 /root/install.python3 || {
     echo "[install] Installation script finished with warnings, checking status..."
@@ -38,5 +37,6 @@ if [ ! -f /home/xui/status ]; then
 fi
 
 /configure.sh
+/persist-data.sh
 
 echo "[install] Installation completed successfully."
