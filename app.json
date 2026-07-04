@@ -1,0 +1,22 @@
+{
+  "name": "XUI.one Panel",
+  "description": "XUI.one IPTV panel - Heroku deployment (admin panel only, streaming requires VPS)",
+  "repository": "https://github.com/ereja36/xui.one",
+  "stack": "container",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "standard-2x"
+    }
+  },
+  "image": "heroku-24",
+  "buildpacks": [],
+  "env": {
+    "TZ": {
+      "value": "UTC"
+    }
+  },
+  "scripts": {
+    "postdeploy": "echo 'Deploy completed. Check logs for access URL: heroku logs --tail'"
+  }
+}
