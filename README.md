@@ -87,6 +87,55 @@ Docker setup-i aplikon konfigurimin që duhet bërë manualisht në VPS:
 
 ---
 
+## Instalim në Heroku (nga GitHub Web)
+
+> **Kujdes:** Heroku mbështet vetëm **panelin admin** (web UI). Streaming IPTV **nuk funksionon** në Heroku sepse kërkon shumë porta dhe filesystem të qëndrueshëm. Për streaming, përdor VPS ose Docker.
+
+### Hapat në Heroku Dashboard
+
+1. Hyr në [dashboard.heroku.com](https://dashboard.heroku.com)
+2. Kliko **New** → **Create new app**
+3. Emërto app-in (p.sh. `xui-panel-ime`)
+4. Te **Deployment method**, zgjidh **GitHub**
+5. Lidh repo-n `ereja36/xui.one`
+6. Te **Settings** → **Config Vars**: shto `TZ=UTC` (opsionale)
+7. Te **Settings** → **Stack**: zgjidh **Container** (heroku-24)
+8. Aktivizo **Automatic deploys** nga branch `main` (ose `cursor/docker-xui-setup-554e`)
+9. Kliko **Deploy Branch**
+
+### Ose me Heroku CLI
+
+```bash
+heroku login
+heroku create xui-panel-ime --stack container
+heroku stack:set container
+heroku git:remote -a xui-panel-ime
+git push heroku cursor/docker-xui-setup-554e:main
+```
+
+### Pas deploy-it
+
+```bash
+heroku logs --tail -a xui-panel-ime
+heroku open -a xui-panel-ime
+```
+
+Kredencialet shfaqen në logs. Kërko rreshtin `Continue Setup:`.
+
+### Kufizimet në Heroku
+
+| Funksion | Heroku | VPS/Docker |
+|----------|--------|------------|
+| Admin panel (web) | Po (me kufizime) | Po |
+| Streaming IPTV | **Jo** | Po |
+| Porta 8000, 2086, 25461 | **Jo** | Po |
+| Të dhëna pas restart | **Humben** | Ruhen (volume) |
+| Redis Premium add-on | Nuk lidhet automatikisht | Redis lokal |
+
+**Rekomandim:** Përdor dyno **Standard-2X** (1GB RAM) ose më të madh. Build zgjat 10–15 minuta.
+
+---
+
 ## Instalim direkt në VPS (Ubuntu)
 
 > **Vetëm në Ubuntu të pastër** (18, 20, 22, 24)
@@ -121,10 +170,15 @@ sudo systemctl restart xuione.service
 ```
 xui.one/
 ├── Dockerfile              # Imazh Ubuntu 24.04 + dependencies
+├── Dockerfile.heroku       # Imazh për Heroku (install gjatë build)
+├── heroku.yml              # Konfigurim deploy nga GitHub
+├── app.json                # Template Heroku app
 ├── docker-compose.yml      # Compose me volume dhe porta
 ├── docker/
 │   ├── entrypoint.sh       # Start / install automatik
+│   ├── heroku-entrypoint.sh # Start + $PORT për Heroku
 │   ├── configure.sh        # Konfigurim IP 0.0.0.0
-│   └── install-docker.sh   # Instalim XUI.one
+│   ├── install-docker.sh   # Instalim XUI.one
+│   └── install-heroku.sh   # Instalim gjatë build për Heroku
 └── install.sh              # Instalim VPS origjinal
 ```
